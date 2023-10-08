@@ -1,0 +1,32 @@
+const PAYE_RATES = [
+  { minMonthly: 0, maxMonthly: 24000, rate: 10 },
+  { minMonthly: 24001, maxMonthly: 32333, rate: 25 },
+  { minMonthly: 32334, maxMonthly: 500000, rate: 30 },
+  { minMonthly: 500001, maxMonthly: 800000, rate: 32.5 },
+  { minMonthly: 800001, maxMonthly: Infinity, rate: 35 },
+];
+
+// Function to calculate NHIF deduction
+function calculateNHIF(grossPay) {
+  for (const rate of NHIF_RATES) {
+    if (grossPay >= rate.minGrossPay && grossPay <= rate.maxGrossPay) {
+      return rate.deduction;
+    }
+  }
+  return 0;
+}
+
+// Function to calculate NSSF deduction
+function calculateNSSF(grossPay) {
+  const tierIContribution = Math.min(grossPay, NSSF_TIER_I_LIMIT) * NSSF_RATE_EMPLOYEE;
+  const tierIIContribution = Math.min(grossPay, NSSF_TIER_II_LIMIT) * NSSF_RATE_EMPLOYEE;
+  return tierIContribution + tierIIContribution;
+}
+
+// Function to calculate net salary
+function calculateNetSalary(basicSalary, benefits) {
+  const grossPay = basicSalary + benefits;
+  const paye = calculatePAYE(grossPay);
+  const nhif = calculateNHIF(grossPay);
+  const nssf = calculateNSSF(grossPay);
+  const netSalary = grossPay - paye - nhif - nssf - PERSONAL_RELIEF;
